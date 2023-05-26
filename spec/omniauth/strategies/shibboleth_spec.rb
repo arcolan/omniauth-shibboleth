@@ -11,17 +11,17 @@ def make_env(path = '/auth/shibboleth', props = {})
 end
 
 def without_session_failure_path
-  if OmniAuth::VERSION >= "1.0" && OmniAuth::VERSION < "1.1"
+  if OmniAuth::VERSION >= "2.1" && OmniAuth::VERSION < "2.2"
     "/auth/failure?message=no_shibboleth_session"
-  elsif OmniAuth::VERSION >= "1.1"
+  elsif OmniAuth::VERSION >= "2.2"
     "/auth/failure?message=no_shibboleth_session&strategy=shibboleth"
   end
 end
 
 def empty_uid_failure_path
-  if OmniAuth::VERSION >= "1.0" && OmniAuth::VERSION < "1.1"
+  if OmniAuth::VERSION >= "2.1" && OmniAuth::VERSION < "2.2"
     "/auth/failure?message=empty_uid"
-  elsif OmniAuth::VERSION >= "1.1"
+  elsif OmniAuth::VERSION >= "2.2"
     "/auth/failure?message=empty_uid&strategy=shibboleth"
   end
 end
