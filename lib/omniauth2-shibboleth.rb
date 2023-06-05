@@ -1,4 +1,4 @@
-require "omniauth-shibboleth/version"
+require "omniauth2-shibboleth/version"
 require "omniauth"
 
 module OmniAuth
