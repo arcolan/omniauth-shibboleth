@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Fonction d'aide
-function afficher_aide() {
+afficher_aide() {
     echo "Utilisation :"
     echo "  ./o2s-install.sh [-o]"
     echo
@@ -50,6 +50,21 @@ display_state() {
         echo -e "${GREEN}$(basename $file) mis à jour.${NOCOLOR}"
     else
         echo -e "${ORANGE}$(basename $file) non modifié.${NOCOLOR}"
+    fi
+}
+
+# Fonction de vérification de présence d'une chaine
+check_comment() {
+    local filename="$1"
+    local search_string="$2"
+
+    if grep -q "$search_string" "$filename"; then
+        return 0
+    else
+        echo "Le fichier $CONF n'est pas correctement paramétré."
+        echo "Consultez la documentation pour plus de détails :"
+        echo "https://github.com/arcolan/omniauth2-shibboleth/tree/master/gitlab"
+        exit 1
     fi
 }
 
@@ -133,7 +148,14 @@ ORANGE='\033[0;33m'
 # Paramètres du script
 DIR="/opt/gitlab/embedded/service/gitlab-rails"
 CONF="/etc/gitlab/gitlab.rb"
+CONF_COMMENT="o2s_comment"
 OMNIAUTH_VERSION="2.1.0"
+
+# Vérification de présence du fichier de configuration
+if [ ! -f "$CONF" ]; then
+    echo "Le fichier $CONF n'existe pas."
+    exit 1
+fi
 
 # Traitement des options de ligne de commande
 while getopts "odh" opt; do
@@ -145,7 +167,9 @@ while getopts "odh" opt; do
             NEW_GEM="omniauth-shibboleth"
             ;;
         d)  
-            comment_lines "$CONF" "o2s_comment"
+            if check_comment "$CONF" "$CONF_COMMENT" ; then
+                comment_lines "$CONF" "o2s_comment"
+            fi
             i=$(delete_line "$DIR/app/helpers/auth_helper.rb" "    shibboleth")
             display_state "$DIR/app/helpers/auth_helper.rb" "$i"
             exit_script
@@ -166,6 +190,11 @@ if [ -z "$OMNIAUTH_SHIBBOLETH_VERSION" ] || [ -z "$OMNIAUTH_SHIBBOLETH_CHECKSUM"
     NEW_GEM="omniauth2-shibboleth"
 fi
 
+# Modification de gitlab.rb
+if check_comment "$CONF" "$CONF_COMMENT" ; then
+    uncomment_lines "$CONF" "$CONF_COMMENT"
+fi
+
 # Installation d'Omniauth Shibboleth
 if /opt/gitlab/embedded/bin/gem list |grep -Fq "$OLD_GEM"
 then
@@ -183,8 +212,6 @@ if [ -f ./shibboleth_64.png ]; then
 fi
 
 # Modification des fichiers de configuration de Gitlab
-uncomment_lines "$CONF" "o2s_comment"
-
 i=$(insert_line "$DIR/app/helpers/auth_helper.rb" "    shibboleth" "    salesforce")
 display_state "$DIR/app/helpers/auth_helper.rb" "$i"
 
