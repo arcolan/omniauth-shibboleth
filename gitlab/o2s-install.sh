@@ -102,7 +102,7 @@ exit_script() {
     gitlab-ctl restart sidekiq
 
     # URL à vérifier
-    URL=$(echo $(cat /etc/gitlab/gitlab.rb | grep "^external_url") | cut -d'"' -f2)
+    URL=$(echo $(cat /etc/gitlab/gitlab.rb | grep "^external_url") | cut -d'"' -f2 | cut -d"'" -f2)
     # Durée maximale en secondes
     max_duration=180
 
