@@ -224,7 +224,7 @@ j=$(insert_line "$DIR/Gemfile.checksum" "{\"name\":\"$NEW_GEM\",\"version\":\"$O
 display_state "$DIR/Gemfile.checksum" "$((i+j))"
 
 i=$(delete_line "$DIR/Gemfile.lock" $OLD_GEM)
-j=$(insert_line "$DIR/Gemfile.lock" "  $NEW_GEM (~> $OMNIAUTH_SHIBBOLETH_VERSION)" "  omniauth-saml \(~> *")
+j=$(insert_line "$DIR/Gemfile.lock" "  $NEW_GEM (~> $OMNIAUTH_SHIBBOLETH_VERSION)" "  omniauth-saml \\\\(~> *")
 k=$(insert_line "$DIR/Gemfile.lock" "      omniauth (>= $OMNIAUTH_VERSION)" "      ruby-saml *")
 l=$(insert_line "$DIR/Gemfile.lock" "    $NEW_GEM ($OMNIAUTH_SHIBBOLETH_VERSION)" "      ruby-saml *")
 display_state "$DIR/Gemfile.lock" "$((i+j+k+l))"
